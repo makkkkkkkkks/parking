@@ -1,10 +1,10 @@
 package com.parking.storage;
 
+import com.parking.config.ParkingProperties;
 import com.parking.model.ParkingInfo;
 import com.parking.repository.ParkingInfoRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.OptionalInt;
@@ -14,8 +14,7 @@ import java.util.OptionalInt;
 @RequiredArgsConstructor
 public class ParkingStorage {
 
-    @Value("${parking.total-spaces:10}")
-    private final int totalSpaces;
+    private final ParkingProperties parkingProperties;
     private final ParkingInfoRepository repository;
 
     public int getOccupiedSpaces() {
@@ -23,7 +22,7 @@ public class ParkingStorage {
     }
 
     public int getAvailableSpaces() {
-        return totalSpaces - getOccupiedSpaces();
+        return parkingProperties.getTotalSpaces() - getOccupiedSpaces();
     }
 
     public ParkingInfo getByVehicleReg(String vehicleReg) {
@@ -35,7 +34,7 @@ public class ParkingStorage {
     }
 
     public OptionalInt findFirstAvailableSpace() {
-        for (int i = 1; i <= totalSpaces; i++) {
+        for (int i = 1; i <= parkingProperties.getTotalSpaces(); i++) {
             if (!repository.existsBySpaceNumber(i)) {
                 return OptionalInt.of(i);
             }
