@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: Parking API
+  version: 1.0.0
+  description: API for parking management system
+
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+paths:
+  /parking:
+    get:
+      tags:
+        - Parking
+      summary: Get parking status
+      description: Gets available and occupied number of spaces
+      operationId: getParkingStatus
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingStatusResponseDTO'
+    
+    post:
+      tags:
+        - Parking
+      summary: Park vehicle
+      description: Parks a given vehicle in the first available space and returns the vehicle and its space number
+      operationId: parkVehicle
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/ParkVehicleRequestDTO'
+      responses:
+        '201':
+          description: Vehicle parked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkVehicleResponseDTO'
+
+  /parking/bill:
+    post:
+      tags:
+        - Bill
+      summary: Generate bill
+      description: Frees up this vehicles space and return its final charge from its parking time until now
+      operationId: generateBill
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateBillRequestDTO'
+      responses:
+        '200':
+          description: Bill generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResponseDTO'
+
+components:
+  schemas:
+    ParkingStatusResponseDTO:
+      type: object
+      properties:
+        availableSpaces:
+          type: integer
+          format: int32
+        occupiedSpaces:
+          type: integer
+          format: int32
+      required:
+        - availableSpaces
+        - occupiedSpaces
+
+    ParkVehicleRequestDTO:
+      type: object
+      properties:
+        vehicleReg:
+          type: string
+        vehicleType:
+          type: integer
+          format: int32
+      required:
+        - vehicleReg
+        - vehicleType
+
+    ParkVehicleResponseDTO:
+      type: object
+      properties:
+        vehicleReg:
+          type: string
+        spaceNumber:
+          type: integer
+          format: int32
+        timeIn:
+          type: string
+          format: date-time
+      required:
+        - vehicleReg
+        - spaceNumber
+        - timeIn
+
+    GenerateBillRequestDTO:
+      type: object
+      properties:
+        vehicleReg:
+          type: string
+      required:
+        - vehicleReg
+
+    BillResponseDTO:
+      type: object
+      properties:
+        billId:
+          type: string
+        vehicleReg:
+          type: string
+        vehicleCharge:
+          type: number
+          format: double
+        timeIn:
+          type: string
+          format: date-time
+        timeOut:
+          type: string
+          format: date-time
+      required:
+        - billId
+        - vehicleReg
+        - vehicleCharge
+        - timeIn
+        - timeOut
+
