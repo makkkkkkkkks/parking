@@ -6,4 +6,3 @@ public class VehicleAlreadyParkedException extends RuntimeException {
         super(message);
     }
 }
-

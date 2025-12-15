@@ -9,9 +9,11 @@ import com.parking.mapper.ParkingStatusMapper;
 import com.parking.service.ParkVehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ParkingController implements ParkingApi {
@@ -22,16 +24,21 @@ public class ParkingController implements ParkingApi {
 
     @Override
     public ResponseEntity<ParkingStatusResponseDTO> getParkingStatus() {
+        log.info("Request received to get parking status");
         var parkingStatus = parkVehicleService.getParkingStatus();
         var responseDTO = parkingStatusMapper.toParkingStatusResponseDTO(parkingStatus);
+        log.info("Parking status retrieved successfully: availableSpaces={}, occupiedSpaces={}", 
+                responseDTO.getAvailableSpaces(), responseDTO.getOccupiedSpaces());
         return ResponseEntity.ok(responseDTO);
     }
 
     @Override
     public ResponseEntity<ParkVehicleResponseDTO> parkVehicle(@Valid ParkVehicleRequestDTO parkVehicleRequest) {
+        log.info("Request received to park vehicle with registration number: {}", parkVehicleRequest.getVehicleReg());
         var parkVehicle = parkVehicleService.parkVehicle(parkVehicleRequest);
         var responseDTO = parkVehicleMapper.toParkVehicleResponseDTO(parkVehicle);
-        return ResponseEntity.ok(responseDTO);
+        log.info("Vehicle parked successfully: vehicleReg={}, spaceNumber={}", 
+                responseDTO.getVehicleReg(), responseDTO.getSpaceNumber());
+        return ResponseEntity.status(201).body(responseDTO);
     }
 }
-

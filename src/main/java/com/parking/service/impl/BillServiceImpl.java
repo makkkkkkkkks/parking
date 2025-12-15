@@ -1,13 +1,15 @@
 package com.parking.service.impl;
 
 import com.parking.config.ParkingBillingProperties;
-import com.parking.dto.GenerateBillRequestDTO;
+import com.parking.dto.BillRequestDTO;
 import com.parking.dto.BillResponseDTO;
+import com.parking.exception.CarNotFoundException;
 import com.parking.mapper.BillMapper;
 import com.parking.model.ParkingInfo;
 import com.parking.service.BillService;
 import com.parking.storage.ParkingStorage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BillServiceImpl implements BillService {
@@ -25,11 +28,14 @@ public class BillServiceImpl implements BillService {
     private final BillMapper billMapper;
 
     @Override
-    public BillResponseDTO generateBill(GenerateBillRequestDTO request) {
+    public BillResponseDTO generateBill(BillRequestDTO request) {
         ParkingInfo parkingInfo = validateAndGetParkingInfo(request.getVehicleReg());
         LocalDateTime timeOut = LocalDateTime.now();
         long minutesParked = calculateParkingMinutes(parkingInfo.getTimeIn(), timeOut);
         BigDecimal totalCharge = calculateTotalCharge(parkingInfo.getVehicleType(), minutesParked);
+        
+        log.info("Vehicle with registration number {} started payment with total charge: {}", 
+                request.getVehicleReg(), totalCharge);
         
         parkingStorage.removeVehicle(request.getVehicleReg());
         
@@ -39,14 +45,16 @@ public class BillServiceImpl implements BillService {
     private ParkingInfo validateAndGetParkingInfo(String vehicleReg) {
         ParkingInfo parkingInfo = parkingStorage.getByVehicleReg(vehicleReg);
         if (parkingInfo == null) {
-            throw new IllegalArgumentException("Vehicle not found: " + vehicleReg);
+            throw new CarNotFoundException("Vehicle not found: " + vehicleReg);
         }
         return parkingInfo;
     }
 
     private long calculateParkingMinutes(LocalDateTime timeIn, LocalDateTime timeOut) {
-        long minutes = Duration.between(timeIn, timeOut).toMinutes();
-        return Math.max(minutes, 0);
+        Duration duration = Duration.between(timeIn, timeOut);
+        long seconds = duration.getSeconds();
+        long minutes = (seconds + 59) / 60;
+        return Math.max(minutes, 1);
     }
 
     private BigDecimal calculateTotalCharge(int vehicleType, long minutesParked) {
@@ -75,4 +83,3 @@ public class BillServiceImpl implements BillService {
         };
     }
 }
-

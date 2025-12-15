@@ -17,5 +17,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNoAvailableParkingSpacesException(NoAvailableParkingSpacesException ex) {
         return ResponseEntity.status(HttpStatus.FOUND).body(ex.getMessage());
     }
-}
 
+    @ExceptionHandler(CarNotFoundException.class)
+    public ResponseEntity<String> handleCarNotFoundException(CarNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+}

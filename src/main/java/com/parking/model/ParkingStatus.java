@@ -9,4 +9,3 @@ public class ParkingStatus {
     private int availableSpaces;
     private int occupiedSpaces;
 }
-

@@ -50,4 +50,3 @@ public class ParkingInfoRepositoryImpl implements ParkingInfoRepository {
         storage.remove(info.getVehicleReg());
     }
 }
-
