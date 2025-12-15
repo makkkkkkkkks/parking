@@ -11,5 +11,6 @@ public class ParkingInfo {
     private int vehicleType;
     private int spaceNumber;
     private LocalDateTime timeIn;
+
 }
 

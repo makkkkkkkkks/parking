@@ -1,14 +1,14 @@
 package com.parking.service;
 
 import com.parking.dto.ParkVehicleRequestDTO;
-import com.parking.dto.ParkVehicleResponseDTO;
-import com.parking.dto.ParkingStatusResponseDTO;
+import com.parking.model.ParkingInfo;
+import com.parking.model.ParkingStatus;
 import org.jspecify.annotations.Nullable;
 
 public interface ParkVehicleService {
-    ParkVehicleResponseDTO parkVehicle(ParkVehicleRequestDTO request);
+    ParkingInfo parkVehicle(ParkVehicleRequestDTO request);
 
-    ParkingStatusResponseDTO getParkingStatus();
+    ParkingStatus getParkingStatus();
 
 }
 
