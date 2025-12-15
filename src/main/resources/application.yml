@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: parking
+
+parking:
+  total-spaces: 10
+  rate:
+    smallCar: 0.10
+    mediumCar: 0.20
+    largeCar: 0.40
+  additional-charge:
+    amount: 1.0
+    periodMinutes: 5
+
